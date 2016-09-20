@@ -9,17 +9,26 @@
 import UIKit
 import CoreData
 
+// MARK:
+// MARK: - NotesViewController Class
+// MARK:
 class NotesViewController: UIViewController {
-    
-    
+    // MARK:
+    // MARK: - Properties
+    // MARK:
     @IBOutlet weak var tableView: UITableView!
     var notesArray = [NSManagedObject]()
-    
+    var newNoteTitle: String?
+    var newNoteText: String?
+    // MARK:
+    // MARK: - UIViewController Methods
+    // MARK:
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tableView.delegate = self
         self.tableView.dataSource = self
-        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "Cell")    }
+        self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "tableViewCell")
+    }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
@@ -35,40 +44,27 @@ class NotesViewController: UIViewController {
             print("Could not fetch \(error), \(error.userInfo)")
         }
     }
-    
-    @IBAction func didTapAddNote(sender: UIBarButtonItem) {
-        let alert = UIAlertController(title: "New Note",
-                                      message: "Add a new note",
-                                      preferredStyle: .Alert)
-        let saveAction = UIAlertAction(title: "Save",
-                                       style: .Default,
-                                       handler: { (action:UIAlertAction) -> Void in
-                                        
-                                        let textField = alert.textFields!.first
-                                        self.saveNoteWith(textField!.text!)
-                                        self.tableView.reloadData()
-        })
-        let cancelAction = UIAlertAction(title: "Cancel",
-                                         style: .Default) { (action: UIAlertAction) -> Void in
-        }
-        alert.addTextFieldWithConfigurationHandler {
-            (textField: UITextField) -> Void in
-        }
-        alert.addAction(saveAction)
-        alert.addAction(cancelAction)
-        presentViewController(alert,
-                              animated: true,
-                              completion: nil)
+    // MARK:
+    // MARK: - AddNoteViewController Unwind Segue Methods
+    // MARK:
+    @IBAction func didTapDoneAddNote(segue: UIStoryboardSegue) {
+        guard let
+            title = self.newNoteTitle,
+            text = self.newNoteText
+        else { return }
+        self.saveNoteWith(title, text: text)
+        self.tableView.reloadData()
     }
     
-    func saveNoteWith(text: String) {
+    func saveNoteWith(title: String, text: String) {
         let appDelegate =
             UIApplication.sharedApplication().delegate as! AppDelegate
         let managedContext = appDelegate.managedObjectContext
         let entity =  NSEntityDescription.entityForName("Note",
                                                         inManagedObjectContext:managedContext)
         let note = NSManagedObject(entity: entity!,
-                                     insertIntoManagedObjectContext: managedContext)
+                                   insertIntoManagedObjectContext: managedContext)
+        note.setValue(title, forKey: "noteTitle")
         note.setValue(text, forKey: "noteText")
         do {
             try managedContext.save()
@@ -77,18 +73,36 @@ class NotesViewController: UIViewController {
             print("Could not save \(error), \(error.userInfo)")
         }
     }
-}
-
-extension NotesViewController: UITableViewDelegate, UITableViewDataSource {
     
+    @IBAction func didTapCancelAddNote(segue: UIStoryboardSegue) {
+        
+    }
+}
+// MARK:
+// MARK: - UITableViewDelegate & UITableViewDataSource Protocols
+// MARK:
+extension NotesViewController: UITableViewDelegate, UITableViewDataSource {
+    // MARK:
+    // MARK: - UITableViewDelegate & UITableViewDataSource Protocol Methods
+    // MARK:
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.notesArray.count
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("Cell")
+        let cell = self.tableView.dequeueReusableCellWithIdentifier("NoteCell", forIndexPath: indexPath) as! NoteCell
         let note = self.notesArray[indexPath.row]
-        cell!.textLabel!.text = note.valueForKey("noteText") as? String
-        return cell!
+        cell.titleLabel.text = note.valueForKey("noteTitle") as? String
+        cell.previewTextLabel.text = note.valueForKey("noteText") as? String
+        return cell
     }
 }
+
+
+
+
+
+
+
+
+
