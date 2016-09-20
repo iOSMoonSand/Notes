@@ -20,6 +20,11 @@ class AddNoteViewController: UIViewController {
     // MARK:
     // MARK: - UIViewController Methods
     // MARK:
+    override func viewDidLoad() {
+        self.titleTextField.delegate = self
+        self.noteTextView.delegate = self
+    }
+    
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         print("tap fired: Done")
         guard let
@@ -31,8 +36,28 @@ class AddNoteViewController: UIViewController {
         destinationVC.newNoteText = text
     }
 }
-
-
+// MARK:
+// MARK: - UITextFieldDelegate Protocol
+// MARK:
+extension AddNoteViewController: UITextFieldDelegate {
+    // MARK:
+    // MARK: - UITextFieldDelegate Methods
+    // MARK:
+    func textFieldDidBeginEditing(textField: UITextField) {
+        self.titleTextField.text = ""
+    }
+}
+// MARK:
+// MARK: - UITextViewDelegate Protocol
+// MARK:
+extension AddNoteViewController: UITextViewDelegate {
+    // MARK:
+    // MARK: - UITextViewDelegate Methods
+    // MARK:
+    func textViewDidBeginEditing(textView: UITextView) {
+        self.noteTextView.text = ""
+    }
+}
 
 
 

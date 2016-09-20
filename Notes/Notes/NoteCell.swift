@@ -17,6 +17,7 @@ class NoteCell: UITableViewCell {
     // MARK:
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var previewTextLabel: UILabel!
+    @IBOutlet weak var dateCreatedLabel: UILabel!
 }
 
 

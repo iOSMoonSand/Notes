@@ -20,6 +20,7 @@ class NotesViewController: UIViewController {
     var notesArray = [NSManagedObject]()
     var newNoteTitle: String?
     var newNoteText: String?
+    var newNoteDate: String?
     // MARK:
     // MARK: - UIViewController Methods
     // MARK:
@@ -45,6 +46,18 @@ class NotesViewController: UIViewController {
         }
     }
     // MARK:
+    // MARK: - Edit Button Action
+    // MARK:
+    @IBAction func didTapEditNotes(sender: UIBarButtonItem) {
+        if editing {
+            sender.title = "Edit"
+            setEditing(false, animated: true)
+        } else {
+            sender.title = "Done"
+            setEditing(true, animated: true)
+        }
+    }
+    // MARK:
     // MARK: - AddNoteViewController Unwind Segue Methods
     // MARK:
     @IBAction func didTapDoneAddNote(segue: UIStoryboardSegue) {
@@ -52,11 +65,14 @@ class NotesViewController: UIViewController {
             title = self.newNoteTitle,
             text = self.newNoteText
         else { return }
-        self.saveNoteWith(title, text: text)
+        
+        let date = NSDate()
+        
+        self.saveNoteWith(title, text: text, date: date)
         self.tableView.reloadData()
     }
     
-    func saveNoteWith(title: String, text: String) {
+    func saveNoteWith(title: String, text: String, date: NSDate) {
         let appDelegate =
             UIApplication.sharedApplication().delegate as! AppDelegate
         let managedContext = appDelegate.managedObjectContext
@@ -66,6 +82,7 @@ class NotesViewController: UIViewController {
                                    insertIntoManagedObjectContext: managedContext)
         note.setValue(title, forKey: "noteTitle")
         note.setValue(text, forKey: "noteText")
+        note.setValue(date, forKey: "dateCreated")
         do {
             try managedContext.save()
             self.notesArray.append(note)
@@ -93,8 +110,47 @@ extension NotesViewController: UITableViewDelegate, UITableViewDataSource {
         let cell = self.tableView.dequeueReusableCellWithIdentifier("NoteCell", forIndexPath: indexPath) as! NoteCell
         let note = self.notesArray[indexPath.row]
         cell.titleLabel.text = note.valueForKey("noteTitle") as? String
-        cell.previewTextLabel.text = note.valueForKey("noteText") as? String
+        
+        guard let noteText = note.valueForKey("noteText") as? String else { return UITableViewCell() }
+            cell.previewTextLabel.text = noteText
+        
+        guard let dateCreated = note.valueForKey("dateCreated") as? NSDate else { return UITableViewCell() }
+        
+        let date: String = {
+            
+            let formatter = NSDateFormatter()
+            formatter.dateStyle = .ShortStyle
+            formatter.timeStyle = .ShortStyle
+            
+            let formattedDate = formatter.stringFromDate(dateCreated)
+            return formattedDate
+        }()
+        
+        cell.dateCreatedLabel.text = date
+        
         return cell
+    }
+    
+    override func setEditing(editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
+        self.tableView.setEditing(editing, animated: animated)
+    }
+    
+    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        if editingStyle == .Delete {
+            let appDelegate =
+                UIApplication.sharedApplication().delegate as! AppDelegate
+            let managedContext = appDelegate.managedObjectContext
+            let note = self.notesArray[indexPath.row]
+            managedContext.deleteObject(note)
+            self.notesArray.removeAtIndex(indexPath.row)
+            do {
+                try managedContext.save()
+            } catch _ {
+                
+            }
+            self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+        }
     }
 }
 
