@@ -12,15 +12,26 @@ import CoreData
 // MARK:
 // MARK: - NotesViewController Class
 // MARK:
-class NotesViewController: UIViewController {
+final class NotesViewController: UIViewController {
     // MARK:
     // MARK: - Properties
     // MARK:
     @IBOutlet weak var tableView: UITableView!
     var notesArray = [NSManagedObject]()
+    var filteredNotes = [NSManagedObject]()
     var newNoteTitle: String?
     var newNoteText: String?
     var newNoteDate: String?
+    
+    private lazy var searchController: UISearchController = {
+       let searchController = UISearchController(searchResultsController: nil)
+        searchController.searchResultsUpdater = self
+        searchController.dimsBackgroundDuringPresentation = false
+        searchController.hidesNavigationBarDuringPresentation = true
+        searchController.delegate = self
+        return searchController
+    }()
+    
     // MARK:
     // MARK: - UIViewController Methods
     // MARK:
@@ -29,12 +40,18 @@ class NotesViewController: UIViewController {
         self.tableView.delegate = self
         self.tableView.dataSource = self
         self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "tableViewCell")
+        searchController.searchResultsUpdater = self
+        self.tableView.tableHeaderView = searchController.searchBar
+        searchController.searchBar.sizeToFit()
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        let appDelegate =
-            UIApplication.sharedApplication().delegate as! AppDelegate
+        reloadAllNotes()
+    }
+    
+    private func reloadAllNotes() {
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         let managedContext = appDelegate.managedObjectContext
         let fetchRequest = NSFetchRequest(entityName: "Note")
         do {
@@ -55,13 +72,38 @@ class NotesViewController: UIViewController {
             destinationVC.noteTitle = note.valueForKey("noteTitle") as? String
             destinationVC.noteText = note.valueForKey("noteText") as? String
             destinationVC.tableViewIndex = selectedIndexPath.row
+            searchController.dismissViewControllerAnimated(true, completion: nil)
         }
     }
     // MARK:
     // MARK: - Search Button Action
     // MARK:
     
-//search IBAciton here
+    @IBAction func presentSearchBar(sender: UIBarButtonItem) {
+        self.tableView.tableHeaderView = searchController.searchBar
+        searchController.searchBar.sizeToFit()
+    }
+    private var fetchRequest: NSFetchRequest = {
+        let tempFetchRequest = NSFetchRequest(entityName: "Note")
+        return tempFetchRequest
+    }()
+    
+    private func searchBarFetchRequest(searchText: String) {
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let managedContext = appDelegate.managedObjectContext
+        
+        let predicate1: NSPredicate = NSPredicate(format: "noteTitle CONTAINS[cd] %@", argumentArray: [searchText])
+        let predicate2: NSPredicate = NSPredicate(format: "noteText CONTAINS[cd] %@", argumentArray: [searchText])
+        let predicate: NSPredicate  = NSCompoundPredicate(orPredicateWithSubpredicates: [predicate1,predicate2])
+        
+        fetchRequest.predicate = predicate
+        do {
+            self.notesArray = try managedContext.executeFetchRequest(fetchRequest) as! [NSManagedObject]
+        } catch let error as NSError  {
+            print("Could not fetch \(error), \(error.userInfo)")
+        }
+    }
+    
     
     // MARK:
     // MARK: - AddNoteViewController Unwind Segue Methods
@@ -78,7 +120,7 @@ class NotesViewController: UIViewController {
         self.tableView.reloadData()
     }
     
-    func saveNoteWith(title: String, text: String, date: NSDate) {
+    private func saveNoteWith(title: String, text: String, date: NSDate) {
         let appDelegate =
             UIApplication.sharedApplication().delegate as! AppDelegate
         let managedContext = appDelegate.managedObjectContext
@@ -97,7 +139,7 @@ class NotesViewController: UIViewController {
         }
     }
     
-    @IBAction func didTapCancelAddNote(segue: UIStoryboardSegue) {
+    @IBAction private func didTapCancelAddNote(segue: UIStoryboardSegue) {
         
     }
     // MARK:
@@ -186,6 +228,21 @@ extension NotesViewController: DetailNoteViewControllerDelegate {
 }
 
 
+extension NotesViewController: UISearchResultsUpdating {
+    func updateSearchResultsForSearchController(searchController: UISearchController) {
+        guard let text = searchController.searchBar.text else { return }
+        searchBarFetchRequest(text)
+        self.tableView.reloadData()
+    }
+
+}
+
+extension NotesViewController: UISearchControllerDelegate {
+    func didDismissSearchController(searchController: UISearchController) {
+        reloadAllNotes()
+        self.tableView.reloadData()
+    }
+}
 
 
 
