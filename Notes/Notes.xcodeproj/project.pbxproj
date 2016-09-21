@@ -13,6 +13,9 @@
 		5EA518AA1D90AF9800CD9779 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5EA518A91D90AF9800CD9779 /* Assets.xcassets */; };
 		5EA518AD1D90AF9800CD9779 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5EA518AB1D90AF9800CD9779 /* LaunchScreen.storyboard */; };
 		5EA518B51D90B07C00CD9779 /* NotesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA518B41D90B07C00CD9779 /* NotesViewController.swift */; };
+		5EA518B71D90BEE700CD9779 /* AddNoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA518B61D90BEE700CD9779 /* AddNoteViewController.swift */; };
+		5EA518B91D90D00200CD9779 /* NoteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA518B81D90D00200CD9779 /* NoteCell.swift */; };
+		5EA518BB1D91BBAE00CD9779 /* DetailNoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA518BA1D91BBAE00CD9779 /* DetailNoteViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +27,9 @@
 		5EA518AC1D90AF9800CD9779 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5EA518AE1D90AF9800CD9779 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5EA518B41D90B07C00CD9779 /* NotesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotesViewController.swift; sourceTree = "<group>"; };
+		5EA518B61D90BEE700CD9779 /* AddNoteViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddNoteViewController.swift; sourceTree = "<group>"; };
+		5EA518B81D90D00200CD9779 /* NoteCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoteCell.swift; sourceTree = "<group>"; };
+		5EA518BA1D91BBAE00CD9779 /* DetailNoteViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailNoteViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +64,9 @@
 			children = (
 				5EA5189F1D90AF9800CD9779 /* AppDelegate.swift */,
 				5EA518B41D90B07C00CD9779 /* NotesViewController.swift */,
+				5EA518B61D90BEE700CD9779 /* AddNoteViewController.swift */,
+				5EA518BA1D91BBAE00CD9779 /* DetailNoteViewController.swift */,
+				5EA518B81D90D00200CD9779 /* NoteCell.swift */,
 				5EA518A31D90AF9800CD9779 /* Main.storyboard */,
 				5EA518A91D90AF9800CD9779 /* Assets.xcassets */,
 				5EA518AB1D90AF9800CD9779 /* LaunchScreen.storyboard */,
@@ -139,9 +148,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5EA518B71D90BEE700CD9779 /* AddNoteViewController.swift in Sources */,
 				5EA518A81D90AF9800CD9779 /* Notes.xcdatamodeld in Sources */,
+				5EA518B91D90D00200CD9779 /* NoteCell.swift in Sources */,
 				5EA518A01D90AF9800CD9779 /* AppDelegate.swift in Sources */,
 				5EA518B51D90B07C00CD9779 /* NotesViewController.swift in Sources */,
+				5EA518BB1D91BBAE00CD9779 /* DetailNoteViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
