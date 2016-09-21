@@ -78,11 +78,7 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Knb-0u-Rj9">
-                        <barButtonItem key="leftBarButtonItem" title="Edit" id="Cd9-dq-Dfb">
-                            <connections>
-                                <action selector="didTapEditNotes:" destination="BYZ-38-t0r" id="crJ-Qk-HsQ"/>
-                            </connections>
-                        </barButtonItem>
+                        <barButtonItem key="leftBarButtonItem" systemItem="search" id="vAX-jN-fN7"/>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="eht-nh-2p2">
                             <connections>
                                 <segue destination="UYc-Hq-o0D" kind="presentation" identifier="NotesToAddNote" id="oe8-rK-GFv"/>
@@ -91,11 +87,69 @@
                     </navigationItem>
                     <connections>
                         <outlet property="tableView" destination="Dq6-wv-nGJ" id="jx5-8C-d0p"/>
+                        <segue destination="Arv-g9-jv2" kind="show" identifier="NotesToDetailNote" id="pcX-yj-16P"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="923" y="-355"/>
+        </scene>
+        <!--Title-->
+        <scene sceneID="SUc-sF-sBZ">
+            <objects>
+                <viewController id="Arv-g9-jv2" customClass="DetailNoteViewController" customModule="Notes" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Bfh-z9-GWF"/>
+                        <viewControllerLayoutGuide type="bottom" id="AzN-s6-93g"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="PEf-Uh-hpI">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Note Title" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="K6I-dP-yAr">
+                                <rect key="frame" x="20" y="79" width="560" height="30"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="Note Text" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="vH8-Ci-09H">
+                                <rect key="frame" x="20" y="117" width="560" height="463"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="vH8-Ci-09H" firstAttribute="top" secondItem="K6I-dP-yAr" secondAttribute="bottom" constant="8" id="Nla-fw-uOb"/>
+                            <constraint firstItem="vH8-Ci-09H" firstAttribute="trailing" secondItem="PEf-Uh-hpI" secondAttribute="trailingMargin" id="QvN-X9-7qn"/>
+                            <constraint firstItem="K6I-dP-yAr" firstAttribute="leading" secondItem="PEf-Uh-hpI" secondAttribute="leadingMargin" id="XzH-BW-gxQ"/>
+                            <constraint firstItem="K6I-dP-yAr" firstAttribute="top" secondItem="Bfh-z9-GWF" secondAttribute="bottom" constant="15" id="Z8g-90-bta"/>
+                            <constraint firstItem="K6I-dP-yAr" firstAttribute="trailing" secondItem="PEf-Uh-hpI" secondAttribute="trailingMargin" id="bqu-i0-w4k"/>
+                            <constraint firstItem="AzN-s6-93g" firstAttribute="top" secondItem="vH8-Ci-09H" secondAttribute="bottom" constant="20" id="eAb-Fh-1vu"/>
+                            <constraint firstItem="vH8-Ci-09H" firstAttribute="leading" secondItem="PEf-Uh-hpI" secondAttribute="leadingMargin" id="gZ7-iy-x3X"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Title" id="Eu9-Lc-Gfo">
+                        <barButtonItem key="leftBarButtonItem" title="Back" id="DfS-2n-e9F">
+                            <connections>
+                                <segue destination="iFx-6f-5Ht" kind="unwind" unwindAction="didTapBackDetailNote:" id="91K-pa-zLZ"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="action" id="Iwb-DX-VSL">
+                            <connections>
+                                <action selector="didTapShareDetailNote:" destination="Arv-g9-jv2" id="ed0-UL-6tS"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="noteTextView" destination="vH8-Ci-09H" id="qcx-ks-AWk"/>
+                        <outlet property="noteTitleTextField" destination="K6I-dP-yAr" id="y4r-BS-QKK"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="oqO-Vp-oxo" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="iFx-6f-5Ht" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="1663" y="-355"/>
         </scene>
         <!--Add Note View Controller-->
         <scene sceneID="3lE-Fu-ty7">
@@ -154,7 +208,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sII-Lq-5qW" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="xoP-GV-lzH" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="1647" y="-355"/>
+            <point key="canvasLocation" x="923" y="-1086"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="SA2-sP-aY8">

@@ -45,18 +45,24 @@ class NotesViewController: UIViewController {
             print("Could not fetch \(error), \(error.userInfo)")
         }
     }
-    // MARK:
-    // MARK: - Edit Button Action
-    // MARK:
-    @IBAction func didTapEditNotes(sender: UIBarButtonItem) {
-        if editing {
-            sender.title = "Edit"
-            setEditing(false, animated: true)
-        } else {
-            sender.title = "Done"
-            setEditing(true, animated: true)
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "NotesToDetailNote" {
+            guard let selectedIndexPath = self.tableView.indexPathForSelectedRow else { return }
+            let note = self.notesArray[selectedIndexPath.row]
+            guard let destinationVC = segue.destinationViewController as? DetailNoteViewController else { return }
+            destinationVC.delegate = self
+            destinationVC.noteTitle = note.valueForKey("noteTitle") as? String
+            destinationVC.noteText = note.valueForKey("noteText") as? String
+            destinationVC.tableViewIndex = selectedIndexPath.row
         }
     }
+    // MARK:
+    // MARK: - Search Button Action
+    // MARK:
+    
+//search IBAciton here
+    
     // MARK:
     // MARK: - AddNoteViewController Unwind Segue Methods
     // MARK:
@@ -94,13 +100,19 @@ class NotesViewController: UIViewController {
     @IBAction func didTapCancelAddNote(segue: UIStoryboardSegue) {
         
     }
+    // MARK:
+    // MARK: - DetailNoteViewController Unwind Segue Methods
+    // MARK:
+    @IBAction func didTapBackDetailNote(segue: UIStoryboardSegue) {
+        
+    }
 }
 // MARK:
 // MARK: - UITableViewDelegate & UITableViewDataSource Protocols
 // MARK:
 extension NotesViewController: UITableViewDelegate, UITableViewDataSource {
     // MARK:
-    // MARK: - UITableViewDelegate & UITableViewDataSource Protocol Methods
+    // MARK: - UITableViewDelegate & UITableViewDataSource Methods
     // MARK:
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.notesArray.count
@@ -110,24 +122,16 @@ extension NotesViewController: UITableViewDelegate, UITableViewDataSource {
         let cell = self.tableView.dequeueReusableCellWithIdentifier("NoteCell", forIndexPath: indexPath) as! NoteCell
         let note = self.notesArray[indexPath.row]
         cell.titleLabel.text = note.valueForKey("noteTitle") as? String
-        
-        guard let noteText = note.valueForKey("noteText") as? String else { return UITableViewCell() }
-            cell.previewTextLabel.text = noteText
-        
+        cell.previewTextLabel.text = note.valueForKey("noteText") as? String
         guard let dateCreated = note.valueForKey("dateCreated") as? NSDate else { return UITableViewCell() }
-        
         let date: String = {
-            
             let formatter = NSDateFormatter()
             formatter.dateStyle = .ShortStyle
             formatter.timeStyle = .ShortStyle
-            
             let formattedDate = formatter.stringFromDate(dateCreated)
             return formattedDate
         }()
-        
         cell.dateCreatedLabel.text = date
-        
         return cell
     }
     
@@ -138,22 +142,48 @@ extension NotesViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
-            let appDelegate =
-                UIApplication.sharedApplication().delegate as! AppDelegate
+            let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
             let managedContext = appDelegate.managedObjectContext
             let note = self.notesArray[indexPath.row]
             managedContext.deleteObject(note)
             self.notesArray.removeAtIndex(indexPath.row)
             do {
                 try managedContext.save()
-            } catch _ {
-                
+            } catch {
+                let saveError = error as NSError
+                print(saveError)
             }
             self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         }
     }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        performSegueWithIdentifier("NotesToDetailNote", sender: self)
+        self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+    }
 }
-
+// MARK:
+// MARK: - DetailNoteViewControllerDelegate Protocol
+// MARK:
+extension NotesViewController: DetailNoteViewControllerDelegate {
+    // MARK:
+    // MARK: - DetailNoteViewControllerDelegate Methods
+    // MARK:
+    func updateNoteWith(title: String, text: String, index: Int) {
+        let note = self.notesArray[index]
+        let date = NSDate()
+        note.setValue(title, forKey: "noteTitle")
+        note.setValue(text, forKey: "noteText")
+        note.setValue(date, forKey: "dateCreated")
+        do {
+            try note.managedObjectContext?.save()
+        } catch {
+            let saveError = error as NSError
+            print(saveError)
+        }
+        self.tableView.reloadData()
+    }
+}
 
 
 

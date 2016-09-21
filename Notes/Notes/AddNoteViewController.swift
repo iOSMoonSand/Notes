@@ -26,7 +26,6 @@ class AddNoteViewController: UIViewController {
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        print("tap fired: Done")
         guard let
             title = self.titleTextField.text,
             text = self.noteTextView.text,
