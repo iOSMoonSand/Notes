@@ -30,6 +30,7 @@ class DetailNoteViewController: UIViewController {
     var noteTitle: String?
     var noteText: String?
     var tableViewIndex: Int?
+    var tapInsideTextView = UITapGestureRecognizer()
     // MARK:
     // MARK: - UIViewController Methods
     // MARK:
@@ -39,10 +40,28 @@ class DetailNoteViewController: UIViewController {
         self.noteTextView.text = self.noteText
         self.noteTitleTextField.delegate = self
         self.noteTextView.delegate = self
+        self.noteTextView.dataDetectorTypes = .All
+        
+        self.tapInsideTextView = UITapGestureRecognizer(target: self, action: #selector(handleTapInsideTextView))
+        self.tapInsideTextView.delegate = self
+        self.tapInsideTextView.numberOfTapsRequired = 1
+        self.noteTextView.addGestureRecognizer(self.tapInsideTextView)
+    }
+    
+    func handleTapInsideTextView() {
+        print("tap function began")
+        self.noteTextView.dataDetectorTypes = .None
+        self.noteTextView.editable = true
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(stopEditingTextView))
+        self.noteTextView.becomeFirstResponder()
+    }
+    
+    func stopEditingTextView() {
+        textViewDidEndEditing(self.noteTextView)
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        guard let
+            guard let
             title = self.noteTitleTextField.text,
             text = self.noteTextView.text,
             index = self.tableViewIndex
@@ -76,10 +95,6 @@ extension DetailNoteViewController: UITextFieldDelegate {
     // MARK:
     // MARK: - UITextFieldDelegate Methods
     // MARK:
-    func textFieldDidBeginEditing(textField: UITextField) {
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(stopEditingTextField))
-    }
-    
     func stopEditingTextField() {
         self.noteTitleTextField.resignFirstResponder()
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Action, target: self, action: nil)
@@ -92,17 +107,18 @@ extension DetailNoteViewController: UITextViewDelegate {
     // MARK:
     // MARK: - UITextViewDelegate Methods
     // MARK:
-    func textViewDidBeginEditing(textView: UITextView) {
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(stopEditingTextView))
-    }
     
-    func stopEditingTextView() {
-        self.noteTextView.resignFirstResponder()
+    func textViewDidEndEditing(textView: UITextView) {
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Action, target: self, action: #selector(presentActivityVC))
+        self.noteTextView.editable = false
+        self.noteTextView.dataDetectorTypes = .All
     }
 }
 
 
+extension DetailNoteViewController: UIGestureRecognizerDelegate {
+    
+}
 
 
 
