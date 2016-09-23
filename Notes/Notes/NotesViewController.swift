@@ -51,8 +51,7 @@ final class NotesViewController: UIViewController {
     }
     
     private func reloadAllNotes() {
-        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-        let managedContext = appDelegate.managedObjectContext
+        let managedContext = DataManager.sharedInstance.managedObjectContext
         let fetchRequest = NSFetchRequest(entityName: "Note")
         do {
             let results =
@@ -89,8 +88,7 @@ final class NotesViewController: UIViewController {
     }()
     
     private func searchBarFetchRequest(searchText: String) {
-        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-        let managedContext = appDelegate.managedObjectContext
+        let managedContext = DataManager.sharedInstance.managedObjectContext
         
         let predicate1: NSPredicate = NSPredicate(format: "noteTitle CONTAINS[cd] %@", argumentArray: [searchText])
         let predicate2: NSPredicate = NSPredicate(format: "noteText CONTAINS[cd] %@", argumentArray: [searchText])
@@ -121,9 +119,7 @@ final class NotesViewController: UIViewController {
     }
     
     private func saveNoteWith(title: String, text: String, date: NSDate) {
-        let appDelegate =
-            UIApplication.sharedApplication().delegate as! AppDelegate
-        let managedContext = appDelegate.managedObjectContext
+        let managedContext = DataManager.sharedInstance.managedObjectContext
         let entity =  NSEntityDescription.entityForName("Note",
                                                         inManagedObjectContext:managedContext)
         let note = NSManagedObject(entity: entity!,
@@ -184,8 +180,7 @@ extension NotesViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
-            let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-            let managedContext = appDelegate.managedObjectContext
+            let managedContext = DataManager.sharedInstance.managedObjectContext
             let note = self.notesArray[indexPath.row]
             managedContext.deleteObject(note)
             self.notesArray.removeAtIndex(indexPath.row)
